@@ -46,6 +46,7 @@
         buildMetaData(sampleOne);
         buildBarChart(sampleOne);
         buildBubbleChart(sampleOne);
+        buildGaugeChart(sampleOne)
         });
     };
 
@@ -55,13 +56,14 @@
         buildMetaData(selectedSample);
         buildBarChart(selectedSample);
         buildBubbleChart(selectedSample);
+        buildGaugeChart(selectedSample);
     }
 
     //Function for Metadata 
     function buildMetaData(sample) {
         d3.json(url).then((data) => {
             //Retrieve metadata 
-            let metaData = data.metadata; // Corrected property name from 'metaData' to 'metadata'
+            let metaData = data.metadata; 
     
             //Filter to get value Data only 
             let value = metaData.filter(result => result.id == sample);
@@ -82,9 +84,6 @@
         });
     };
 
-    //Creating bar chart using these values: sample_values: values for bar chart, otu_ids: labels for bar chart, otu_labels: hovertext for the chart 
-
-    //Creating bar chart using these values: sample_values: values for bar chart, otu_ids: labels for bar chart, otu_labels: hovertext for the chart 
 //Building function that plots sample data into a bar chart  
 function buildBarChart(sample) {
     d3.json(url).then((data) => {
@@ -98,17 +97,17 @@ function buildBarChart(sample) {
         let valueData = value[0];
 
         //Getting otu_ids, labels, and sample values 
-        let otu_ids = valueData.otu_ids;
-        let otu_labels = valueData.otu_labels;
-        let sample_values = valueData.sample_values;
+        let otuIds = valueData.otu_ids;
+        let otuLabels = valueData.otu_labels;
+        let sampleValues = valueData.sample_values;
 
         //Console log
-        console.log(otu_ids, otu_labels, sample_values);
+        console.log(otuIds, otuLabels, sampleValues);
 
         //Slicing, sorting and mapping data to only get the first 10 results 
-        let xData = sample_values.slice(0, 10).reverse();
-        let yData = otu_ids.slice(0, 10).map(id => `OTU ${id}`).reverse();
-        let labels = otu_labels.slice(0, 10).reverse();
+        let xData = sampleValues.slice(0, 10).reverse();
+        let yData = otuIds.slice(0, 10).map(id => `OTU ${id}`).reverse();
+        let labels = otuLabels.slice(0, 10).reverse();
 
         //Creating bar chart trace
         let trace1 = {
@@ -141,22 +140,22 @@ function buildBubbleChart(sample) {
         let valueData = value[0];
 
         //Getting otu_ids, labels, and sample values
-        let otu_ids = valueData.otu_ids;
-        let otu_labels = valueData.otu_labels;
-        let sample_values = valueData.sample_values;
+        let otuIds = valueData.otu_ids;
+        let otuLabels = valueData.otu_labels;
+        let sampleValues = valueData.sample_values;
 
         //Logging to console
-        console.log(otu_ids, otu_labels, sample_values);
+        console.log(otuIds, otuLabels, sampleValues);
 
         //Setting up bubble chart 
         let trace2 = {
-            x: otu_ids,
-            y: sample_values,
-            text: otu_labels, // Corrected from 'otu_ids' to 'otu_labels' for hovertext
+            x: otuIds,
+            y: sampleValues,
+            text: otuLabels, 
             mode: "markers",
             marker: {
-                size: sample_values,
-                color: otu_ids,
+                size: sampleValues,
+                color: otuIds,
                 colorscale: "Earth"
             }
         };
@@ -171,6 +170,57 @@ function buildBubbleChart(sample) {
         Plotly.newPlot("bubbleChart", [trace2], layout);
     });
 
+};
+
+function buildGaugeChart(sample) { 
+    d3.json(url).then((data) => {
+        
+        let metadata = data.metadata; 
+
+        //Retrieving all sample data
+        let metaDataInfo = metadata.filter(result => result.id == sample)[0];
+
+        //Get the washing frequency (wfrq) value from metadata
+        let wfreq = metaDataInfo.wfreq;
+
+        // Creating the guage chart trace;
+        let trace3 = {
+            domain: { x: [0, 1], y: [0, 1] },
+            value: wfreq,
+            title: { text: "Belly Button Washing Frequency<br>Scrubs per Week" },
+            type: "indicator",
+            mode: "gauge+number",
+            gauge: {
+                axis: { range: [null, 9], tickvals: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] },
+                bar: { color: "darkblue" },
+                steps: [
+                    { range: [0, 1], color: "#f7fcf0" },
+                    { range: [1, 2], color: "#e0f3db" },
+                    { range: [2, 3], color: "#ccebc5" },
+                    { range: [3, 4], color: "#a8ddb5" },
+                    { range: [4, 5], color: "#7bccc4" },
+                    { range: [5, 6], color: "#4eb3d3" },
+                    { range: [6, 7], color: "#2b8cbe" },
+                    { range: [7, 8], color: "#0868ac" },
+                    { range: [8, 9], color: "#084081" }
+                ],
+            }
+        };
+        // Layout setup
+        let layout = {
+            width: 500,
+            height: 500,
+            margin: {
+                t:0,
+                b:0
+            }
+        };
+        
+        //Calling Plotly to plot guage chart 
+        Plotly.newPlot("guageChart", [trace3], layout);
+
+
+    });
 };
 
 init();

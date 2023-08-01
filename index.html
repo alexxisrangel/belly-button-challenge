@@ -25,8 +25,8 @@
       <div class="col-md-2">
         <div class="well">
           <h5>Test Subject ID No.:</h5>
+          <select id="selDataset" onchange="optionChanged(this.value)"></select>
         </div>
-        <select id="selDataset" onchange="optionChanged(this.value)"></select>
         <div class="panel panel-primary">
           <div class="panel-heading">
             <h3 class="panel-title">Demographic Info</h3>
@@ -41,7 +41,7 @@
         <div id="plot"></div>
       </div>
       <div class="col-md-5">
-        <div id="gauge"></div>
+        <div id="guageChart"></div>
       </div>
     </div>
     <div class="row">
@@ -56,6 +56,7 @@
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <script src="./static/js/app.js"></script>
+  <!--<script src="./static/js/bonus.js"></script>-->
   
 
 </body>
